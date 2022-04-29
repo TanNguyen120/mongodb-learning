@@ -25,4 +25,21 @@ const listDataBase = async () => {
 }
 
 
-listDataBase();
+// hàm insert vào collection planet một document mới
+const insertAPlanet = async (planet) => {
+    try {
+        await mongoClient.connect();
+        const db = mongoClient.db("sample_guides");
+        const collection = db.collection("planets");
+        const relsult = await collection.insertOne(planet);
+        console.log('inserted a planet to sample_guides database successfully with id: ' + relsult.insertedId);
+    } catch (error) {
+        console.log(error);
+    } finally {
+        await mongoClient.close();
+    }
+}
+
+
+const planet = { name: "Sayan", orderFromSun: 12, hasRing: false };
+insertAPlanet(planet);
