@@ -41,5 +41,66 @@ const insertAPlanet = async (planet) => {
 }
 
 
-const planet = { name: "Sayan", orderFromSun: 12, hasRing: false };
-insertAPlanet(planet);
+// hàm lấy danh sách các document trong collection planet
+const listOfPlanets = async () => {
+    try {
+        await mongoClient.connect();
+        const db = mongoClient.db("sample_guides");
+        const collection = db.collection("planets");
+        const planets = await collection.find({}).toArray();
+        if (planets) {
+            console.log("planets list is: ");
+            planets.forEach(planet => {
+                console.log("name : " + planet.name);
+            });
+        }
+        else {
+            console.log("planets list is empty");
+        }
+    } catch (error) {
+        console.log(error);
+    } finally { mongoClient.close(); }
+}
+
+// hàm lấy 1 document trong collection planet theo name
+const getAPlanet = async (name) => {
+    try {
+        await mongoClient.connect();
+        const db = mongoClient.db("sample_guides");
+        const collection = db.collection("planets");
+        const planet = await collection.findOne({ name: name });
+        if (planet) {
+            console.log("planet is: " + JSON.stringify(planet));
+        }
+        else {
+            console.log("there is no planet with name: " + name);
+        }
+    } catch (error) {
+        console.log(error);
+    } finally { mongoClient.close(); }
+}
+
+// hàm tìm những hành tinh có vòng tròn bao quanh sắp xếp theo thứ tự từ gần đến xa mặt trời nhất
+const getPlanetHasRing = async () => {
+    try {
+        await mongoClient.connect();
+        const db = mongoClient.db("sample_guides");
+        const collection = db.collection("planets");
+        const query = { hasRings: true };
+        const option = { sort: { orderFromSun: 1 }, limit: 10 };
+        const planets = await collection.find(query, option).toArray();
+        if (planets) {
+            console.log("planets have ring list is: ");
+            planets.forEach(planet => {
+                console.log("name : " + planet.name);
+            });
+        }
+        else {
+            console.log("planets list is empty");
+        }
+    } catch (error) {
+        console.log(error);
+    } finally { mongoClient.close(); }
+}
+
+getPlanetHasRing();
